@@ -23,7 +23,7 @@ class ResqueConnector implements ConnectorInterface {
 	{
 		if (!isset($config['host']))
 		{
-			$config = Config::get('database.redis.default');
+			$config = $this->getResqueConfig();
 
 			if (!isset($config['host']))
 			{
@@ -44,6 +44,20 @@ class ResqueConnector implements ConnectorInterface {
 		Resque::setBackend($config['host'].':'.$config['port'], $config['database']);
 
 		return new ResqueQueue;
+	}
+
+	/**
+	 * Get a proper resque config.
+	 * Please see ResqueServiceProvider to see how it merges configs.
+	 * @return array
+	 */
+	private function getResqueConfig()
+	{
+		if(Config::get('queue.connections.resque.host')) {
+			return Config::get('queue.connections.resque');
+		} else {
+			return Config::get('database.redis.default');
+		}
 	}
 
 } // End ResqueConnector

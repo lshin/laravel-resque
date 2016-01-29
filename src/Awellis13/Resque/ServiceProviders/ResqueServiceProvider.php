@@ -53,7 +53,8 @@ class ResqueServiceProvider extends QueueServiceProvider {
 
 		$manager->addConnector('resque', function ()
 		{
-			$config = Config::get('database.redis.default');
+			$key = (Config::get('queue.connections.resque.connection'))? Config::get('queue.connections.resque.connection') : 'default';
+			$config = Config::get('database.redis.'.$key);
 			Config::set('queue.connections.resque', array_merge($config, ['driver' => 'resque']));
 
 			return new ResqueConnector;
