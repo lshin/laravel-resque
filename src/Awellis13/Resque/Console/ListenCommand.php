@@ -52,7 +52,7 @@ class ListenCommand extends Command {
 		$interval = $this->input->getOption('interval');
 
 		// Configuration
-		$config = Config::get('database.redis.default');
+		$config = $this->getResqueConfig();
 
 		if (!isset($config['host']))
 		{
@@ -94,6 +94,21 @@ class ListenCommand extends Command {
 			['queue', NULL, InputOption::VALUE_OPTIONAL, 'The queue to listen on', 'default'],
 			['interval', NULL, InputOption::VALUE_OPTIONAL, 'Amount of time to delay failed jobs', 5],
 		];
+	}
+
+	/**
+	 * Get a proper resque config.
+	 * Please see ResqueServiceProvider to see how it merges configs.
+	 * @return array
+	 */
+	private function getResqueConfig()
+	{
+        $connection = Config::get('queue.connections.resque.connection');
+		if($connection) {
+			return Config::get('database.redis.'.$connection);
+		} else {
+			return Config::get('database.redis.default');
+		}
 	}
 
 } // End ListenCommand
